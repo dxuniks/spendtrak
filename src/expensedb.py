@@ -28,6 +28,14 @@ class User(Base):
     last_updated = Column(DateTime, onupdate=datetime.datetime.now)
     accounts = relationship('Account', back_populates='user')
 
+    def __str__(self):
+        return 'USER: email_address=[{0}], last_name=[{1}], ' \
+               'first_name=[{2}], accounts=[{3}]'.format(
+                self.email_address,
+                self.last_name,
+                self.first_name,
+                self.accounts)
+
 
 class Account(Base):
     """
@@ -44,8 +52,25 @@ class Account(Base):
     user = relationship('User', back_populates='accounts')
 
     def __str__(self):
-        return 'name: [{0}], description: [{1}], balance: [{2}]'. \
+        return 'ACCOUNT: name=[{0}], description=[{1}], balance=[{2}]'. \
             format(self.name, self.description, self.flow_balance)
+
+
+class Category(Base):
+    """
+    ORM class for table categories
+    """
+    __tablename__ = 'categories'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=True)
+    description = Column(String(512), default=None)
+    last_updated = Column(DateTime, onupdate=datetime.datetime.now)
+
+    def __str__(self):
+        return 'CATEGORY: name=[{0}], description=[{1}]'.format(
+            self.name, self.description
+        )
 
 
 def get_db_engine(dbname):
@@ -84,8 +109,9 @@ def main():
     # ]
     # persist_record(session, user_a)
     for user in session.query(User).filter(User.email_address == 'tt@book.com'):
-        user.accounts.append(Account(name='tom-account2', last_updated=datetime.datetime.now()))
-        persist_record(session, user)
+        print(user)
+        # user.accounts.append(Account(name='tom-account2', last_updated=datetime.datetime.now()))
+        # persist_record(session, user)
     logging.info('task done')
 
 
